@@ -1,7 +1,5 @@
 package serviços;
 
-import modelos.TelaInicial;
-
-public class Operacoes {
-
+public interface Operacoes {
+    public void exibeCotacao();
 }

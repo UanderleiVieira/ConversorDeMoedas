@@ -1,32 +1,61 @@
 package modelos;
 
+import serviços.Operacoes;
+
 import java.util.Scanner;
 
-public class TelaInicial {
+public class TelaInicial implements Operacoes {
+
+    private final ApiBuscaCotacao api = new ApiBuscaCotacao();
     private int opcao = 1;
 
-    public void exibeTela() {
+    @Override
+    public void exibeCotacao() {
         Scanner sc = new Scanner(System.in);
 
-        while(opcao != 0) {
+        while (opcao != 0) {
+
             System.out.println("**************************************");
-            System.out.println("     ###CONVERSOR DE MOEDAS###");
+            System.out.println("     ### CONVERSOR DE MOEDAS ###");
             System.out.println("**************************************\n");
-            System.out.println("----------------------------------------------------");
-            System.out.println("1 - Dólar americano (USD) -> Real brasileiro (BRL)");
-            System.out.println("2 - Real brasileiro (BRL -> Dólar americano (USD)");
-            System.out.println("3 - Dólar americano (USD) -> Euro (EUR)");
-            System.out.println("4 - Euro (EUR) -> Dólar americano");
-            System.out.println("5 - Real brasileiro (BRL) -> Euro (EUR)");
-            System.out.println("6 - Euro (EUR) -> Real brasileiro (BRL");
-            System.out.println("0 - Para sair ");
-            System.out.println("----------------------------------------------------");
-            System.out.println("Escolha uma opção: ");
+
+            System.out.println("""
+                    1 - Dólar americano -> Real brasileiro
+                    2 - Real brasileiro -> Dólar americano
+                    3 - Dólar americano -> Euro
+                    4 - Euro -> Dólar americano
+                    5 - Real brasileiro -> Euro
+                    6 - Euro -> Real brasileiro
+                    0 - Sair
+                    """);
+
             opcao = sc.nextInt();
-            if(opcao < 0 | opcao > 6) {
-                System.out.println("Digite um número válido ou 0 para sair!");
+
+            if (opcao == 0) {
+                System.out.println("Encerrando...");
+                break;
             }
-            System.out.println("Programa finalizado!");
+
+            Cotacao cotacao = api.buscaCotacao();
+            ConversionRates rates = cotacao.conversion_rates();
+
+            double usd = rates.USD();
+            double brl = rates.BRL();
+            double eur = rates.EUR();
+
+            System.out.println("\nValor a converter: ");
+            double valor = sc.nextDouble();
+
+            switch (opcao) {
+                case 1 -> System.out.println(valor + " USD = " + (valor * brl) + " BRL");
+                case 2 -> System.out.println(valor + " BRL = " + (valor / brl) + " USD");
+                case 3 -> System.out.println(valor + " USD = " + (valor * eur) + " EUR");
+                case 4 -> System.out.println(valor + " EUR = " + (valor / eur) + " USD");
+                case 5 -> System.out.println(valor + " BRL = " + (valor / brl * eur) + " EUR");
+                case 6 -> System.out.println(valor + " EUR = " + (valor * brl / eur) + " BRL");
+                default -> System.out.println("Opção inválida!");
+            }
         }
     }
 }
+

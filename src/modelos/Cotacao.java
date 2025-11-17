@@ -1,4 +1,4 @@
 package modelos;
 
-public record Cotacao(String usd, String eur, String blr) {
+public record Cotacao(String result, String base_code, ConversionRates conversion_rates) {
 }

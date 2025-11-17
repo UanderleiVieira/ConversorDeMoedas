@@ -1,8 +1,6 @@
 package modelos;
 
 import com.google.gson.Gson;
-
-import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -10,8 +8,8 @@ import java.net.http.HttpResponse;
 
 public class ApiBuscaCotacao {
 
-    public Cotacao buscaCotacao(String moeda) {
-        String endereco = "https://v6.exchangerate-api.com/v6/0496f45596094d97e538d1c0/latest/" + moeda;
+    public Cotacao buscaCotacao() {
+        String endereco = "https://v6.exchangerate-api.com/v6/0496f45596094d97e538d1c0/latest/USD";
 
         try {
             HttpClient client = HttpClient.newHttpClient();
@@ -19,18 +17,16 @@ public class ApiBuscaCotacao {
                     .uri(URI.create(endereco))
                     .GET()
                     .build();
-            HttpResponse<String> reponse = client
-                    .send(request, HttpResponse.BodyHandlers.ofString());
-            String json = reponse.body();
-            Gson gson = new Gson();
-            Cotacao cotacao = gson.fromJson(json, Cotacao.class);
-            System.out.println(cotacao);
-        } catch(IOException | InterruptedException e) {
-            throw new RuntimeException("Ocorreu o erro:");
-        } catch(IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
-        return null;
 
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            String json = response.body();
+
+            Gson gson = new Gson();
+            return gson.fromJson(json, Cotacao.class);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao buscar cotação: " + e.getMessage());
+        }
     }
 }
